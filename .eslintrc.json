@@ -114,7 +114,6 @@
     "no-whitespace-before-property": "error",
     "no-unneeded-ternary": "error",
     "operator-assignment": "error",
-    "no-useless-constructor": "error",
     "no-sync": "error",
     "quotes": [
       "error",
@@ -190,10 +189,6 @@
         "asyncArrow": "always",
         "named": "never"
       }
-    ],
-    "max-classes-per-file": [
-      "error",
-      1
     ],
     "array-bracket-newline": [
       "error",

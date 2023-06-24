@@ -5,10 +5,11 @@ import { InjectableClass, InjectableToken, InjectableValue, Scope, Token } from 
 
 export class Container {
 
-  static readonly #injectables = new Map<Token, Injectable[]>();
-  static readonly #singletons = new Map<Class, any>();
+  static #injectables = new Map<Token, Injectable[]>();
+  static #singletons = new Map<Class, any>();
 
   static register<T extends Class>(token: T, injectable?: Partial<InjectableClass<T>>): void;
+  static register<T extends Class>(token: Token, injectable: Omit<InjectableClass<T>, 'scope'> & { scope?: Scope }): void;
   static register<T extends Class>(token: T, injectable: InjectableValue<InstanceType<T>>): void;
   static register<T>(token: string | symbol, injectable: InjectableValue<T>): void;
   static register(token: Token, injectable: InjectableToken): void;
@@ -132,6 +133,11 @@ export class Container {
     });
 
     return new cls(...params);
+  }
+
+  static dispose() {
+    this.#injectables = new Map();
+    this.#singletons = new Map();
   }
 
 }
