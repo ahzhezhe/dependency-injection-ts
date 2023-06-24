@@ -1,5 +1,5 @@
 import { Container } from './Container';
-import { Injections, MetadataKey } from './internal-types';
+import { MetadataKey, ParamInjections } from './internal-types';
 import { InjectableOptions, InjectableToken, InjectableValue, Scope, Token } from './types';
 
 export const Register = (tokens: [token: Token, injectable: InjectableValue<any> | InjectableToken][]): ClassDecorator => () => {
@@ -14,13 +14,13 @@ export const Injectable = (options?: InjectableOptions): ClassDecorator => targe
 };
 
 export const Inject = (token: Token): ParameterDecorator => (target, _, paramIndex) => {
-  const injections: Injections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) || new Map();
-  injections.set(paramIndex, token);
+  const injections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) || new Map();
+  injections.set(paramIndex, { token, require: 'one' });
   Reflect.defineMetadata(MetadataKey.INJECT, injections, target);
 };
 
 export const InjectAll = (token: Token): ParameterDecorator => (target, _, paramIndex) => {
-  const injections: Injections = Reflect.getOwnMetadata(MetadataKey.INJECT_ALL, target) || new Map();
-  injections.set(paramIndex, token);
-  Reflect.defineMetadata(MetadataKey.INJECT_ALL, injections, target);
+  const injections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) || new Map();
+  injections.set(paramIndex, { token, require: 'all' });
+  Reflect.defineMetadata(MetadataKey.INJECT, injections, target);
 };

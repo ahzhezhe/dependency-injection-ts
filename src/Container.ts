@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { MultipleInjectableError, NotInjectableError } from './errors';
-import { Class, Injectable, Injections, MetadataKey } from './internal-types';
+import { Class, Injectable, MetadataKey, ParamInjections, Require } from './internal-types';
 import { InjectableClass, InjectableToken, InjectableValue, Scope, Token } from './types';
 
 export class Container {
@@ -87,7 +87,7 @@ export class Container {
     return injectables[0];
   }
 
-  static #resolve({ type, injectable }: Injectable, require: 'one' | 'all') {
+  static #resolve({ type, injectable }: Injectable, require: Require) {
     switch (type) {
       case 'class':
         if (injectable.scope === Scope.SINGLETON) {
@@ -117,17 +117,16 @@ export class Container {
 
   static #createInstance<T extends Class>(cls: T): InstanceType<T> {
     const paramTypes: any[] = Reflect.getOwnMetadata(MetadataKey.PARAM_TYPES, cls) || [];
-    const injections: Injections = Reflect.getOwnMetadata(MetadataKey.INJECT, cls) || new Map();
-    const allInjections: Injections = Reflect.getOwnMetadata(MetadataKey.INJECT_ALL, cls) || new Map();
+    const paramInjections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, cls) || new Map();
 
     const params = paramTypes.map((paramType, i) => {
-      const injectToken = injections.get(i);
-      const injectAllToken = allInjections.get(i);
-      if (injectToken) {
-        return this.get(injectToken as any);
-      }
-      if (injectAllToken) {
-        return this.getAll(injectAllToken as any);
+      const injection = paramInjections.get(i);
+      if (injection) {
+        const { token, require } = injection;
+        if (require === 'one') {
+          return this.get(token as any);
+        }
+        return this.getAll(token as any);
       }
       return this.get(paramType);
     });

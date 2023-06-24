@@ -2,7 +2,9 @@ import { InjectableClass, InjectableToken, InjectableValue, Token } from './type
 
 export type Class = new(...args: any) => any;
 
-export type Injections = Map<number, Token>;
+export type Require = 'one' | 'all';
+
+export type ParamInjections = Map<number, { token: Token; require: Require }>;
 
 export type Injectable =
   { type: 'class'; injectable: InjectableClass<any> } |
@@ -12,6 +14,5 @@ export type Injectable =
 export const MetadataKey = {
   PARAM_TYPES: 'design:paramtypes',
   TYPE: 'design:type',
-  INJECT: Symbol('INJECT'),
-  INJECT_ALL: Symbol('INJECT_ALL')
+  INJECT: Symbol('INJECT')
 };
