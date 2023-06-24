@@ -1,10 +1,13 @@
-import { InjectableOptions, RegisterWithToken, RegisterWithValue, Token } from './types';
+import { InjectableClass, InjectableToken, InjectableValue, Token } from './types';
 
 export type Class = new(...args: any) => any;
 
-export type TokenOptions = Partial<InjectableOptions & RegisterWithToken & RegisterWithValue<any>>;
-
 export type Injections = Map<number, Token>;
+
+export type Injectable =
+  { type: 'class'; injectable: InjectableClass<any> } |
+  { type: 'value'; injectable: InjectableValue<any> } |
+  { type: 'token'; injectable: InjectableToken }
 
 export const MetadataKey = {
   PARAM_TYPES: 'design:paramtypes',

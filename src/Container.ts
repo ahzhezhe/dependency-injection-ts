@@ -1,91 +1,116 @@
 import 'reflect-metadata';
 import { MultipleInjectableError, NotInjectableError } from './errors';
-import { Class, Injections, MetadataKey, TokenOptions } from './internal-types';
-import { InjectableOptions, RegisterWithToken, RegisterWithValue, Scope, Token } from './types';
+import { Class, Injectable, Injections, MetadataKey } from './internal-types';
+import { InjectableClass, InjectableToken, InjectableValue, Scope, Token } from './types';
 
 export class Container {
 
-  static readonly #injectables = new Map<Class, InjectableOptions>();
-  static readonly #tokens = new Map<Token, TokenOptions[]>();
+  static readonly #injectables = new Map<Token, Injectable[]>();
   static readonly #singletons = new Map<Class, any>();
 
-  static register(token: Class, options?: InjectableOptions): void;
-  static register(token: Token, options: RegisterWithToken): void;
-  static register<T extends Class>(token: T, options: RegisterWithValue<InstanceType<T>>): void;
-  static register<T>(token: string | symbol, options: RegisterWithValue<T>): void;
-  static register(token: Token, options: Partial<InjectableOptions & TokenOptions> = {}) {
-    if (options.token || typeof token === 'string' || typeof token === 'symbol' || options.value instanceof token) {
-      const tokens = this.#tokens.get(token) || [];
-      tokens.push(options as any);
-      this.#tokens.set(token, tokens);
-      return;
-    }
-
-    this.#injectables.set(token, options);
+  static register<T extends Class>(token: T, injectable?: Partial<InjectableClass<T>>): void;
+  static register<T extends Class>(token: T, injectable: InjectableValue<InstanceType<T>>): void;
+  static register<T>(token: string | symbol, injectable: InjectableValue<T>): void;
+  static register(token: Token, injectable: InjectableToken): void;
+  static register(token: Token, injectable?: Partial<InjectableClass<any> & InjectableValue<any> & InjectableToken>) {
+    const tokens = this.#injectables.get(token) || [];
+    tokens.push(this.#toInjectable(token, injectable));
+    this.#injectables.set(token, tokens);
   }
 
   static get<T extends Class>(token: T): InstanceType<T>;
   static get<T>(token: string | symbol): T;
   static get(token: Token) {
-    const options = this.#tokens.get(token);
-    if (options) {
-      if (options.length > 1) {
-        throw new MultipleInjectableError(token);
-      }
-      if (options.length === 1) {
-        const option = options[0];
-        if (option.value) {
-          return option.value;
-        }
-        return this.get(option.token as any);
-      }
-    }
-
-    if (typeof token === 'string' || typeof token === 'symbol') {
-      throw new NotInjectableError(token);
-    }
-
-    return this.#getInstance(token);
+    const injectable = this.#getOneInjectable(token);
+    return this.#resolve(injectable, 'one');
   }
 
   static getAll<T extends Class>(token: T): InstanceType<T>[];
   static getAll<T>(token: string | symbol): T[];
   static getAll(token: Token) {
-    const options = this.#tokens.get(token);
-    if (options) {
-      return options.map(option => {
-        if (option.value) {
-          return option.value;
+    const injectables = this.#getAllInjectables(token);
+    return injectables.map(injectable => this.#resolve(injectable, 'all')).flat();
+  }
+
+  static #toInjectable(token: Token, injectable?: Partial<InjectableClass<any> & InjectableValue<any> & InjectableToken>): Injectable {
+    if (injectable?.value) {
+      return {
+        type: 'value',
+        injectable: {
+          value: injectable.value
         }
-        return this.getAll(option.token as any);
-      }).flat();
+      };
     }
 
-    if (typeof token === 'string' || typeof token === 'symbol') {
-      throw new NotInjectableError(token);
+    if (injectable?.token) {
+      return {
+        type: 'token',
+        injectable: {
+          token: injectable.token
+        }
+      };
     }
 
-    return [this.#getInstance(token)];
+    if (injectable) {
+      return {
+        type: 'class',
+        injectable: {
+          class: injectable.class || token,
+          scope: injectable.scope || Scope.SINGLETON
+        }
+      };
+    }
+
+    return {
+      type: 'class',
+      injectable: {
+        class: token,
+        scope: Scope.SINGLETON
+      }
+    };
   }
 
-  static #getInstance(token: Class) {
-    const options = this.#injectables.get(token);
-    if (!options) {
+  static #getAllInjectables(token: Token): Injectable[] {
+    const injectables = this.#injectables.get(token);
+    if (!injectables) {
       throw new NotInjectableError(token);
     }
-
-    if (!options.scope || options.scope === Scope.SINGLETON) {
-      return this.#getSingleton(token);
-    }
-    return this.#createInstance(token);
+    return injectables;
   }
 
-  static #getSingleton<T extends Class>(token: T): InstanceType<T> {
-    let instance = this.#singletons.get(token);
+  static #getOneInjectable(token: Token): Injectable {
+    const injectables = this.#getAllInjectables(token);
+    if (injectables.length > 1) {
+      throw new MultipleInjectableError(token);
+    }
+    return injectables[0];
+  }
+
+  static #resolve({ type, injectable }: Injectable, require: 'one' | 'all') {
+    switch (type) {
+      case 'class':
+        if (injectable.scope === Scope.SINGLETON) {
+          return this.#getSingleton(injectable.class);
+        }
+        return this.#createInstance(injectable.class);
+
+      case 'token':
+        if (require === 'one') {
+          return this.get(injectable.token as any);
+        }
+        return this.getAll(injectable.token as any);
+
+      case 'value':
+        return injectable.value;
+    }
+  }
+
+  static #getSingleton<T extends Class>(cls: T): InstanceType<T> {
+    let instance = this.#singletons.get(cls);
     if (!instance) {
-      instance = this.#createInstance(token);
+      instance = this.#createInstance(cls);
     }
-    this.#singletons.set(token, instance);
+    this.#singletons.set(cls, instance);
     return instance;
   }
 

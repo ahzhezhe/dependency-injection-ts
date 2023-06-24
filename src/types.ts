@@ -11,12 +11,15 @@ export interface InjectableOptions {
   scope?: Scope;
 }
 
-export type RegistrationOptions<T> = RegisterWithToken | RegisterWithValue<T>;
-
-export interface RegisterWithToken {
-  token: Token;
+export interface InjectableClass<T extends Class> {
+  class: T;
+  scope: Scope;
 }
 
-export interface RegisterWithValue<T> {
+export interface InjectableValue<T> {
   value: T;
+}
+
+export interface InjectableToken {
+  token: Token;
 }
