@@ -1,0 +1,10 @@
+{
+  "name": "dependency-injection-ts - v0",
+  "out": "docs/dependency-injection-ts-v0",
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "excludePrivate": true,
+  "disableSources": true,
+  "hideGenerator": true
+}
