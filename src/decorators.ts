@@ -7,7 +7,10 @@ export const Register = (tokens: [token: Token, injectable: InjectableValue<any>
 };
 
 export const Injectable = (options?: InjectableOptions): ClassDecorator => target => {
-  Container.register(target as any, { class: target as any, scope: options?.scope || Scope.SINGLETON });
+  Container.register(target as any, {
+    class: target as any,
+    scope: options?.scope || Scope.SINGLETON
+  });
 };
 
 export const Inject = (token: Token): ParameterDecorator => (target, _, paramIndex) => {
