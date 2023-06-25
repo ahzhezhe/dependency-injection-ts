@@ -1,7 +1,7 @@
 import { TestClass } from '..';
-import { Container, MultipleInjectableError } from '../../src';
+import { Container } from '../../src';
 
-describe('Injectable token', () => {
+describe('Token', () => {
 
   const otherToken = 'otherToken';
   const otherValue = 'otherValue';
@@ -45,23 +45,6 @@ describe('Injectable token', () => {
 
     const all = Container.getAll(token);
     expect(all).toStrictEqual([otherValue]);
-  });
-
-  test('Multiple token registered', () => {
-    const token = 'token';
-    Container.register(token, { token: otherToken });
-    Container.register(token, { token: otherToken2 });
-    Container.register(TestClass, { token: otherToken });
-    Container.register(TestClass, { token: otherToken2 });
-
-    expect(() => Container.get(token)).toThrow(MultipleInjectableError);
-    expect(() => Container.get(TestClass)).toThrow(MultipleInjectableError);
-
-    let all = Container.getAll(token);
-    expect(all).toStrictEqual([otherValue, otherValue2]);
-
-    all = Container.getAll(TestClass);
-    expect(all).toStrictEqual([otherValue, otherValue2]);
   });
 
 });

@@ -1,8 +1,6 @@
-import { InjectableClass, InjectableToken, InjectableValue, Token } from './types';
+import { InjectableClass, InjectableToken, InjectableValue, Require, Token } from './types';
 
 export type Class = new(...args: any) => any;
-
-export type Require = 'one' | 'all';
 
 export type ParamInjections = Map<number, { token: Token; require: Require }>;
 

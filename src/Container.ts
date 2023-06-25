@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { MultipleInjectableError, NotInjectableError } from './errors';
-import { Class, Injectable, MetadataKey, ParamInjections, Require } from './internal-types';
-import { InjectableClass, InjectableToken, InjectableValue, Scope, Token } from './types';
+import { Class, Injectable, MetadataKey, ParamInjections } from './internal-types';
+import { InjectableClass, InjectableToken, InjectableValue, Require, Scope, Token } from './types';
 
 export class Container {
 
@@ -19,18 +19,94 @@ export class Container {
     this.#injectables.set(token, tokens);
   }
 
-  static get<T extends Class>(token: T): InstanceType<T>;
-  static get<T>(token: string | symbol): T;
-  static get(token: Token) {
-    const injectable = this.#getOneInjectable(token);
-    return this.#resolve(injectable, 'one');
+  static get<T extends Class>(token: T, require?: Require.ONE | Require.ANY): InstanceType<T>;
+  static get<T>(token: string | symbol, require?: Require.ONE | Require.ANY): T;
+  static get<T extends Class>(token: T, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): InstanceType<T> | undefined;
+  static get<T>(token: string | symbol, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): T | undefined;
+  static get<T extends Class>(token: T, require: Require.ALL | Require.ALL_OR_NONE): InstanceType<T>[];
+  static get<T>(token: string | symbol, require: Require.ALL | Require.ALL_OR_NONE): T[];
+  static get(token: Token, require = Require.ONE) {
+    const injectables = this.#injectables.get(token);
+
+    switch (require) {
+      case Require.ONE:
+        if (!injectables?.length) {
+          throw new NotInjectableError(token);
+        }
+        if (injectables.length > 1) {
+          throw new MultipleInjectableError(token);
+        }
+        return this.#resolve(injectables[0], require);
+
+      case Require.ONE_OR_NONE:
+        if (!injectables?.length) {
+          return undefined;
+        }
+        if (injectables.length > 1) {
+          throw new MultipleInjectableError(token);
+        }
+        return this.#resolve(injectables[0], require);
+
+      case Require.ANY:
+        if (!injectables?.length) {
+          throw new NotInjectableError(token);
+        }
+        return this.#resolve(injectables[0], require);
+
+      case Require.ANY_OR_NONE:
+        if (!injectables?.length) {
+          return undefined;
+        }
+        return this.#resolve(injectables[0], require);
+
+      case Require.ALL:
+        if (!injectables?.length) {
+          throw new NotInjectableError(token);
+        }
+        return injectables.map(injectable => this.#resolve(injectable, require)).flat();
+
+      case Require.ALL_OR_NONE:
+        if (!injectables?.length) {
+          return [];
+        }
+        return injectables.map(injectable => this.#resolve(injectable, require)).flat();
+    }
   }
 
-  static getAll<T extends Class>(token: T): InstanceType<T>[];
-  static getAll<T>(token: string | symbol): T[];
-  static getAll(token: Token) {
-    const injectables = this.#getAllInjectables(token);
-    return injectables.map(injectable => this.#resolve(injectable, 'all')).flat();
+  static getOne<T extends Class>(token: T): InstanceType<T>;
+  static getOne<T>(token: string | symbol): T;
+  static getOne(token: any) {
+    return this.get(token, Require.ONE);
+  }
+
+  static getAny<T extends Class>(token: T): InstanceType<T>;
+  static getAny<T>(token: string | symbol): T;
+  static getAny(token: any) {
+    return this.get(token, Require.ANY);
+  }
+
+  static getOneOrNone<T extends Class>(token: T): InstanceType<T> | undefined;
+  static getOneOrNone<T>(token: string | symbol): T | undefined;
+  static getOneOrNone(token: any) {
+    return this.get(token, Require.ONE_OR_NONE);
+  }
+
+  static getAnyOrNone<T extends Class>(token: T): InstanceType<T> | undefined;
+  static getAnyOrNone<T>(token: string | symbol): T | undefined;
+  static getAnyOrNone(token: any) {
+    return this.get(token, Require.ANY_OR_NONE);
+  }
+
+  static getAll<T extends Class>(token: T,): InstanceType<T>[];
+  static getAll<T>(token: string | symbol,): T[];
+  static getAll(token: any) {
+    return this.get(token, Require.ALL);
+  }
+
+  static getAllOrNone<T extends Class>(token: T): InstanceType<T>[];
+  static getAllOrNone<T>(token: string | symbol): T[];
+  static getAllOrNone(token: any) {
+    return this.get(token, Require.ALL_OR_NONE);
   }
 
   static #toInjectable(token: Token, injectable?: Partial<InjectableClass<any> & InjectableValue<any> & InjectableToken>): Injectable {
@@ -71,22 +147,6 @@ export class Container {
     };
   }
 
-  static #getAllInjectables(token: Token): Injectable[] {
-    const injectables = this.#injectables.get(token);
-    if (!injectables) {
-      throw new NotInjectableError(token);
-    }
-    return injectables;
-  }
-
-  static #getOneInjectable(token: Token): Injectable {
-    const injectables = this.#getAllInjectables(token);
-    if (injectables.length > 1) {
-      throw new MultipleInjectableError(token);
-    }
-    return injectables[0];
-  }
-
   static #resolve({ type, injectable }: Injectable, require: Require) {
     switch (type) {
       case 'class':
@@ -96,10 +156,7 @@ export class Container {
         return this.#createInstance(injectable.class);
 
       case 'token':
-        if (require === 'one') {
-          return this.get(injectable.token as any);
-        }
-        return this.getAll(injectable.token as any);
+        return this.get(injectable.token as any, require as any);
 
       case 'value':
         return injectable.value;
@@ -123,12 +180,9 @@ export class Container {
       const injection = paramInjections.get(i);
       if (injection) {
         const { token, require } = injection;
-        if (require === 'one') {
-          return this.get(token as any);
-        }
-        return this.getAll(token as any);
+        return this.get(token as any, require as any);
       }
-      return this.get(paramType);
+      return this.getOne(paramType);
     });
 
     return new cls(...params);
