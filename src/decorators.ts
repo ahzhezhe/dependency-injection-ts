@@ -19,14 +19,16 @@ export const Inject = (token: Token, require = Require.ONE): ParameterDecorator 
   Reflect.defineMetadata(MetadataKey.INJECT, injections, target);
 };
 
-export const InjectOne = (token: Token) => Inject(token, Require.ONE);
+const buildInject = (require: Require) => (token: Token) => Inject(token, require);
 
-export const InjectAny = (token: Token) => Inject(token, Require.ANY);
+export const InjectOne = buildInject(Require.ONE);
 
-export const InjectOneOrNone = (token: Token) => Inject(token, Require.ONE_OR_NONE);
+export const InjectAny = buildInject(Require.ANY);
 
-export const InjectAnyOrNone = (token: Token) => Inject(token, Require.ANY_OR_NONE);
+export const InjectOneOrNone = buildInject(Require.ONE_OR_NONE);
 
-export const InjectAll = (token: Token) => Inject(token, Require.ALL);
+export const InjectAnyOrNone = buildInject(Require.ANY_OR_NONE);
 
-export const InjectAllOrNone = (token: Token) => Inject(token, Require.ALL_OR_NONE);
+export const InjectAll = buildInject(Require.ALL);
+
+export const InjectAllOrNone = buildInject(Require.ALL_OR_NONE);
