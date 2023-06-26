@@ -1,7 +1,18 @@
 export class TestClass {
 
+  private value = 'value';
+
   constructor() {
     expect(true).toBeTruthy();
+  }
+
+  getValue() {
+    return this.value;
+  }
+
+  updateValue(newValue: string) {
+    this.value = newValue;
+    return this;
   }
 
 }

@@ -10,40 +10,24 @@ export class Container {
 
   /**
    * Register injectable class.
-   *
-   * @param token token
-   * @param injectable injectable class, if ommitted, the token class will be treated as injectable, default scope is singleton
+   * If injectable class is omitted, the token class will be treated as injectable.
+   * Default scope is singleton.
    */
-  static register<T extends Class>(token: T, injectable?: Partial<InjectableClass<T>>): void;
+  static register<T extends Class, U = InstanceType<T>>(token: T, injectable?: Partial<InjectableClass<T, U>>): void;
   /**
    * Register injectable class.
-   *
-   * @param token token
-   * @param injectable injectable class, default scope is singleton
+   * Default scope is singleton.
    */
-  static register<T extends Class>(token: Token, injectable: Omit<InjectableClass<T>, 'scope'> & { scope?: Scope }): void;
+  static register<T extends Class, U = InstanceType<T>>(token: Token, injectable: Omit<InjectableClass<T, U>, 'scope'> & { scope?: Scope }): void;
   /**
    * Register injectable value.
-   *
-   * @param token token
-   * @param injectable injectable value.
    */
-  static register<T extends Class>(token: T, injectable: InjectableValue<InstanceType<T>>): void;
-  /**
-   * Register injectable value.
-   *
-   * @param token token
-   * @param injectable injectable value.
-   */
-  static register<T>(token: string | symbol, injectable: InjectableValue<T>): void;
+  static register<T, U = T>(token: Token, injectable: InjectableValue<T, U>): void;
   /**
    * Register injectable token.
-   *
-   * @param token token
-   * @param injectable injectable token.
    */
-  static register(token: Token, injectable: InjectableToken): void;
-  static register(token: Token, injectable?: Partial<InjectableClass<any> & InjectableValue<any> & InjectableToken>) {
+  static register<T, U = T>(token: Token, injectable: InjectableToken<T, U>): void;
+  static register(token: Token, injectable?: Partial<InjectableClass<any, any> & InjectableValue<any, any> & InjectableToken<any, any>>) {
     const tokens = this.#injectables.get(token) || [];
     tokens.push(this.#toInjectable(token, injectable));
     this.#injectables.set(token, tokens);
@@ -51,46 +35,28 @@ export class Container {
 
   /**
    * Get one injectable.
-   *
-   * @param token token
-   * @param require exactly one registered injectable or the first registered injectable, default behaviour is to get exactly one injectable
    */
-  static get<T extends Class>(token: T, require?: Require.ONE | Require.ANY): InstanceType<T>;
+  static get<T extends Class, U = InstanceType<T>>(token: T, require?: Require.ONE | Require.ANY): U;
   /**
    * Get one injectable.
-   *
-   * @param token token
-   * @param require exactly one registered injectable or the first registered injectable, default behaviour is to get exactly one injectable
    */
-  static get<T>(token: string | symbol, require?: Require.ONE | Require.ANY): T;
+  static get<T, U = T>(token: string | symbol, require?: Require.ONE | Require.ANY): U;
   /**
    * Get one injectable or `undefined` if injectable is registered.
-   *
-   * @param token token
-   * @param require exactly one registered injectable or the first registered injectable
    */
-  static get<T extends Class>(token: T, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): InstanceType<T> | undefined;
+  static get<T extends Class, U = InstanceType<T> | undefined>(token: T, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): U;
   /**
    * Get one injectable or `undefined` if injectable is registered.
-   *
-   * @param token token
-   * @param require exactly one registered injectable or the first registered injectable
    */
-  static get<T>(token: string | symbol, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): T | undefined;
+  static get<T, U = T | undefined>(token: string | symbol, require: Require.ONE_OR_NONE | Require.ANY_OR_NONE): U;
   /**
    * Get all injectables.
-   *
-   * @param token token
-   * @param require at least one registered injectable or allow empty array
    */
-  static get<T extends Class>(token: T, require: Require.ALL | Require.ALL_OR_NONE): InstanceType<T>[];
+  static get<T extends Class, U = InstanceType<T>[]>(token: T, require: Require.ALL | Require.ALL_OR_NONE): U;
   /**
    * Get all injectables.
-   *
-   * @param token token
-   * @param require at least one registered injectable or allow empty array
    */
-  static get<T>(token: string | symbol, require: Require.ALL | Require.ALL_OR_NONE): T[];
+  static get<T, U = T[]>(token: string | symbol, require: Require.ALL | Require.ALL_OR_NONE): U;
   static get(token: Token, require = Require.ONE) {
     const injectables = this.#injectables.get(token);
 
@@ -141,76 +107,66 @@ export class Container {
 
   /**
    * Get exactly one injectable.
-   *
-   * @param token token
    */
-  static getOne<T extends Class>(token: T): InstanceType<T>;
-  static getOne<T>(token: string | symbol): T;
+  static getOne<T extends Class, U = InstanceType<T>>(token: T): U;
+  static getOne<T, U = T>(token: string | symbol): U;
   static getOne(token: any) {
     return this.get(token, Require.ONE);
   }
 
   /**
    * Get the first registered injectable.
-   *
-   * @param token token
    */
-  static getAny<T extends Class>(token: T): InstanceType<T>;
-  static getAny<T>(token: string | symbol): T;
+  static getAny<T extends Class, U = InstanceType<T>>(token: T): U;
+  static getAny<T, U = T>(token: string | symbol): U;
   static getAny(token: any) {
     return this.get(token, Require.ANY);
   }
 
   /**
    * Get exactly one injectable or `undefined` if no injectable is registered.
-   *
-   * @param token token
    */
-  static getOneOrNone<T extends Class>(token: T): InstanceType<T> | undefined;
-  static getOneOrNone<T>(token: string | symbol): T | undefined;
+  static getOneOrNone<T extends Class, U = InstanceType<T>>(token: T): U;
+  static getOneOrNone<T, U = T | undefined>(token: string | symbol): U;
   static getOneOrNone(token: any) {
     return this.get(token, Require.ONE_OR_NONE);
   }
 
   /**
    * Get the first registered injectable or `undefined` if no injectable is registered.
-   *
-   * @param token token
    */
-  static getAnyOrNone<T extends Class>(token: T): InstanceType<T> | undefined;
-  static getAnyOrNone<T>(token: string | symbol): T | undefined;
+  static getAnyOrNone<T extends Class, U = InstanceType<T>>(token: T): U;
+  static getAnyOrNone<T, U = T | undefined>(token: string | symbol): U;
   static getAnyOrNone(token: any) {
     return this.get(token, Require.ANY_OR_NONE);
   }
 
   /**
    * Get all injectables, requires at least one injectable.
-   *
-   * @param token token
    */
-  static getAll<T extends Class>(token: T,): InstanceType<T>[];
-  static getAll<T>(token: string | symbol,): T[];
+  static getAll<T extends Class, U = InstanceType<T>[]>(token: T): U;
+  static getAll<T, U = T[]>(token: string | symbol): U;
   static getAll(token: any) {
     return this.get(token, Require.ALL);
   }
 
   /**
    * Get all injectables, could be empty array if no injectable is registered.
-   *
-   * @param token token
    */
-  static getAllOrNone<T extends Class>(token: T): InstanceType<T>[];
-  static getAllOrNone<T>(token: string | symbol): T[];
+  static getAllOrNone<T extends Class, U = InstanceType<T>[]>(token: T): U;
+  static getAllOrNone<T, U = T[]>(token: string | symbol): U;
   static getAllOrNone(token: any) {
     return this.get(token, Require.ALL_OR_NONE);
   }
 
-  static #toInjectable(token: Token, injectable?: Partial<InjectableClass<any> & InjectableValue<any> & InjectableToken>): Injectable {
+  static #toInjectable(
+    token: Token, injectable?: Partial<InjectableClass<any, any> & InjectableValue<any, any> & InjectableToken<any, any>>): Injectable {
     if (injectable?.value) {
       return {
         type: 'value',
         injectable: {
-          value: injectable.value
+          value: injectable.value,
+          transformer: injectable.transformer
         }
       };
     }
@@ -219,7 +175,8 @@ export class Container {
       return {
         type: 'token',
         injectable: {
-          token: injectable.token
+          token: injectable.token,
+          transformer: injectable.transformer
         }
       };
     }
@@ -229,7 +186,8 @@ export class Container {
         type: 'class',
         injectable: {
           class: injectable.class || token,
-          scope: injectable.scope || Scope.SINGLETON
+          scope: injectable.scope || Scope.SINGLETON,
+          transformer: injectable.transformer
         }
       };
     }
@@ -244,19 +202,30 @@ export class Container {
   }
 
   static #resolve({ type, injectable }: Injectable, require: Require) {
+    let value: any;
+
     switch (type) {
       case 'class':
         if (injectable.scope === Scope.SINGLETON) {
-          return this.#getSingleton(injectable.class);
+          value = this.#getSingleton(injectable.class);
+          break;
         }
-        return this.#createInstance(injectable.class);
+        value = this.#createInstance(injectable.class);
+        break;
 
       case 'token':
-        return this.get(injectable.token as any, require as any);
+        value = this.get(injectable.token as any, require as any);
+        break;
 
       case 'value':
-        return injectable.value;
+        value = injectable.value;
+        break;
     }
+
+    if (injectable.transformer) {
+      return injectable.transformer(value);
+    }
+    return value;
   }
 
   static #getSingleton<T extends Class>(cls: T): InstanceType<T> {

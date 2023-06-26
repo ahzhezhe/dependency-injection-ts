@@ -1,13 +1,17 @@
-import { InjectableClass, InjectableToken, InjectableValue, Require, Token } from './types';
+import { InjectableClass, InjectableToken, InjectableValue, Require, Token, Transformer } from './types';
 
 export type Class = new(...args: any) => any;
 
-export type ParamInjections = Map<number, { token: Token; require: Require }>;
+export type ParamInjections = Map<number, {
+  token: Token;
+  require: Require;
+  transformer?: Transformer<any, any>;
+}>;
 
 export type Injectable =
-  { type: 'class'; injectable: InjectableClass<any> } |
-  { type: 'value'; injectable: InjectableValue<any> } |
-  { type: 'token'; injectable: InjectableToken }
+  { type: 'class'; injectable: InjectableClass<any, any> } |
+  { type: 'value'; injectable: InjectableValue<any, any> } |
+  { type: 'token'; injectable: InjectableToken<any, any> }
 
 export const MetadataKey = {
   PARAM_TYPES: 'design:paramtypes',

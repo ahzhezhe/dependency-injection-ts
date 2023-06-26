@@ -40,19 +40,24 @@ export enum Require {
   ALL_OR_NONE = 'all_or_none'
 }
 
+export type Transformer<T, U> = (value: T) => U
+
 export interface InjectableOptions {
   scope?: Scope;
 }
 
-export interface InjectableClass<T extends Class> {
+export interface InjectableClass<T extends Class, U> {
   class: T;
   scope: Scope;
+  transformer?: Transformer<InstanceType<T>, U>;
 }
 
-export interface InjectableValue<T> {
+export interface InjectableValue<T, U> {
   value: T;
+  transformer?: Transformer<T, U>;
 }
 
-export interface InjectableToken {
+export interface InjectableToken<T, U> {
   token: Token;
+  transformer?: Transformer<T, U>;
 }
