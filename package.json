@@ -1,5 +1,5 @@
 {
-  "name": "just-inject",
+  "name": "dependency-injection-ts",
   "version": "0.1.0",
   "author": "Chang Zhe Jiet",
   "description": "A dependency injection library for TypeScript.",
@@ -9,10 +9,10 @@
     "dependency injection",
     "inversion of control"
   ],
-  "homepage": "https://github.com/ahzhezhe/just-inject#readme",
+  "homepage": "https://github.com/ahzhezhe/dependency-injection-ts#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahzhezhe/just-inject"
+    "url": "https://github.com/ahzhezhe/dependency-injection-ts"
   },
   "funding": "https://www.paypal.me/ahzhezhe",
   "license": "ISC",

@@ -1,14 +1,14 @@
-# **just-inject**
-[![npm package](https://img.shields.io/npm/v/just-inject)](https://www.npmjs.com/package/just-inject)
-[![npm downloads](https://img.shields.io/npm/dt/just-inject)](https://www.npmjs.com/package/just-inject)
-[![GitHub test](https://github.com/ahzhezhe/just-inject/workflows/test/badge.svg?branch=master)](https://github.com/ahzhezhe/just-inject)
-[![GitHub issues](https://img.shields.io/github/issues/ahzhezhe/just-inject)](https://github.com/ahzhezhe/just-inject/issues)
-[![GitHub license](https://img.shields.io/github/license/ahzhezhe/just-inject)](https://github.com/ahzhezhe/just-inject/blob/master/LICENSE)
+# **dependency-injection-ts**
+<!-- [![npm package](https://img.shields.io/npm/v/dependency-injection-ts)](https://www.npmjs.com/package/dependency-injection-ts)
+[![npm downloads](https://img.shields.io/npm/dt/dependency-injection-ts)](https://www.npmjs.com/package/dependency-injection-ts) -->
+[![GitHub test](https://github.com/ahzhezhe/dependency-injection-ts/workflows/test/badge.svg?branch=master)](https://github.com/ahzhezhe/dependency-injection-ts)
+[![GitHub issues](https://img.shields.io/github/issues/ahzhezhe/dependency-injection-ts)](https://github.com/ahzhezhe/dependency-injection-ts/issues)
+[![GitHub license](https://img.shields.io/github/license/ahzhezhe/dependency-injection-ts)](https://github.com/ahzhezhe/dependency-injection-ts/blob/master/LICENSE)
 
 <br />
 
-## **What is just-inject?**
-just-inject is a dependency injection library for TypeScript.
+## **What is dependency-injection-ts?**
+dependency-injection-ts is a dependency injection library for TypeScript.
 
 It provides:
 - Constructor parameters injection.
@@ -16,14 +16,14 @@ It provides:
 - Singleton & transient injectable.
 - Decorators for injectable classes and parameter injections.
 
-[API Documentation](https://ahzhezhe.github.io/docs/just-inject-v0/index.html)
+<!-- [API Documentation](https://ahzhezhe.github.io/docs/dependency-injection-ts-v0/index.html) -->
 
-<br />
+<!-- <br />
 
 ## **Install via NPM**
 ```
-npm install just-inject
-```
+npm install dependency-injection-ts
+``` -->
 
 <br />
 

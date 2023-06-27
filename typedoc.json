@@ -1,6 +1,6 @@
 {
-  "name": "just-inject - v0",
-  "out": "docs/just-inject-v0",
+  "name": "dependency-injection-ts - v0",
+  "out": "docs/dependency-injection-ts-v0",
   "entryPoints": [
     "src/index.ts"
   ],
