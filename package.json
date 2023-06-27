@@ -1,8 +1,8 @@
 {
   "name": "dependency-injection-ts",
-  "version": "0.14.3",
+  "version": "0.1.0",
   "author": "Chang Zhe Jiet",
-  "description": "A tool that helps design, create and manage form / survey / questionnaire through simple JSON configurations.",
+  "description": "A dependency injection tool for TypeScript.",
   "keywords": [
     "dependency injection",
     "inversion of control"
