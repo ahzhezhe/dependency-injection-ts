@@ -1,6 +1,6 @@
 {
-  "name": "tsinject - v0",
-  "out": "docs/tsinject-v0",
+  "name": "just-inject - v0",
+  "out": "docs/just-inject-v0",
   "entryPoints": [
     "src/index.ts"
   ],
