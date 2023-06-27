@@ -140,7 +140,7 @@ export class ClassA {
 export class ClassB {
 
   constructor(
-    readonly a: ClassA // will be injected with an instance of ClassA
+    readonly a: ClassA // will be injected with an instance of ClassA based on parameter type
   ) {}
 
 }
@@ -159,7 +159,7 @@ export class ClassA extends ParentClass {
 export class ClassB {
 
   constructor(
-    @Inject(ClassA) readonly a: ParentClass // will be injected with an instance of ClassA althought the parameter type is ParentClass
+    @Inject(ClassA) readonly a: ParentClass // will be injected with an instance of ClassA despite the parameter type is ParentClass
   ) {}
 
 }
