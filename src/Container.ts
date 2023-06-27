@@ -244,8 +244,12 @@ export class Container {
     const params = paramTypes.map((paramType, i) => {
       const injection = paramInjections.get(i);
       if (injection) {
-        const { token, require } = injection;
-        return this.get(token as any, require as any);
+        const { token, require, transformer } = injection;
+        const value = this.get(token as any, require as any);
+        if (transformer) {
+          return transformer(value);
+        }
+        return value;
       }
       return this.getOne(paramType);
     });

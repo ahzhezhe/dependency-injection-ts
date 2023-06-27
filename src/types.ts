@@ -47,6 +47,11 @@ export interface InjectableOptions {
   token?: Token;
 }
 
+export interface InjectOptions {
+  require?: Require;
+  transformer?: Transformer<any, any>;
+}
+
 export interface InjectableClass<T extends Class, U> {
   class: T;
   scope: Scope;

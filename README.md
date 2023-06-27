@@ -16,9 +16,6 @@ It provides:
 - Singleton & transient injectable.
 - Decorators for injectable classes and parameter injections.
 
-It does not provide:
-- Child containers.
-
 [API Documentation](https://ahzhezhe.github.io/docs/dependency-injection-ts-v0/index.html)
 
 <br />
@@ -132,6 +129,7 @@ export class ClassA {
 <br />
 
 # **Inject constructor parameters**
+
 ## **Auto injection**
 ```typescript
 @Injectable()
@@ -217,6 +215,54 @@ export class ClassC {
 - `@InjectAnyOrNone` - inject the first registered injectable in the container, no injectable will result in `undefined`.
 - `@InjectAll` - inject all and at least one injectable, no injectable will result in error.
 - `@InjectAllOrNone` - inject all injectables, no injectable will result in empty array.
+
+<br />
+
+# **Transformer**
+
+## **Transform during registration**
+```typescript
+Container.register('A', { value: 'hello' });
+Container.register('B', { token: 'A', transformer: value => value + ' world' });
+
+@Injectable()
+export class ClassA {
+
+  constructor(
+    @Inject('B') readonly a: string, // will be injected with string value 'hello world'
+  ) {}
+
+}
+```
+
+## **Transform during injection**
+```typescript
+Container.register('A', { value: 'hello' });
+
+@Injectable()
+export class ClassA {
+
+  constructor(
+    @Inject('A', { transformer: value => value + ' world' }) readonly a: string, // will be injected with string value 'hello world'
+  ) {}
+
+}
+```
+
+## **Transform during both registration and injection**
+```typescript
+Container.register('A', { value: 'hello' });
+Container.register('B', { token: 'A', transformer: value => value + ' 1' });
+
+@Injectable()
+export class ClassA {
+
+  constructor(
+    @Inject('B', { transformer: value => value + ' 2' }) readonly a: string, // will be injected with string value 'hello 1 2'
+  ) {}
+
+}
+```
 
 <br />
 

@@ -1,6 +1,6 @@
 import { Container } from './Container';
-import { MetadataKey, ParamInjections } from './internal-types';
-import { InjectableOptions, InjectableToken, InjectableValue, Require, Scope, Token } from './types';
+import { Class, MetadataKey, ParamInjections } from './internal-types';
+import { InjectOptions, InjectableOptions, InjectableToken, InjectableValue, Require, Scope, Token } from './types';
 
 /**
  * Register injectable values and/or tokens.
@@ -14,12 +14,13 @@ export const Register = (tokens: [token: Token, injectable: InjectableValue<any,
  * Default scope is singleton.
  */
 export const Injectable = (options?: InjectableOptions): ClassDecorator => target => {
+  const cls: Class = target as any;
   const { scope = Scope.SINGLETON, token } = options || {};
 
-  Container.register(target as any, { class: target as any, scope });
+  Container.register(cls, { class: cls, scope });
 
   if (token) {
-    Container.register(token, { class: target as any, scope });
+    Container.register(token, { class: cls, scope });
   }
 };
 
@@ -27,13 +28,14 @@ export const Injectable = (options?: InjectableOptions): ClassDecorator => targe
  * Inject injectable to this parameter.
  * Default require exactly one injectable.
  */
-export const Inject = (token: Token, require = Require.ONE): ParameterDecorator => (target, _, paramIndex) => {
+export const Inject = (token: Token, options?: InjectOptions): ParameterDecorator => (target, _, paramIndex) => {
+  const { require = Require.ONE, transformer } = options || {};
   const injections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) || new Map();
-  injections.set(paramIndex, { token, require });
+  injections.set(paramIndex, { token, require, transformer });
   Reflect.defineMetadata(MetadataKey.INJECT, injections, target);
 };
 
-const buildInject = (require: Require) => (token: Token) => Inject(token, require);
+const buildInject = (require: Require) => (token: Token, options?: Omit<InjectOptions, 'require'>) => Inject(token, { ...options, require });
 
 /**
  * Inject exactly one injectable.
