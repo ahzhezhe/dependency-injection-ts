@@ -44,6 +44,7 @@ export type Transformer<T, U> = (value: T) => U
 
 export interface InjectableOptions {
   scope?: Scope;
+  token?: Token;
 }
 
 export interface InjectableClass<T extends Class, U> {

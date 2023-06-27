@@ -14,10 +14,13 @@ export const Register = (tokens: [token: Token, injectable: InjectableValue<any,
  * Default scope is singleton.
  */
 export const Injectable = (options?: InjectableOptions): ClassDecorator => target => {
-  Container.register(target as any, {
-    class: target as any,
-    scope: options?.scope || Scope.SINGLETON
-  });
+  const { scope = Scope.SINGLETON, token } = options || {};
+
+  Container.register(target as any, { class: target as any, scope });
+
+  if (token) {
+    Container.register(token, { class: target as any, scope });
+  }
 };
 
 /**

@@ -6,4 +6,230 @@
 [![GitHub license](https://img.shields.io/github/license/ahzhezhe/dependency-injection-ts)](https://github.com/ahzhezhe/dependency-injection-ts/blob/master/LICENSE)
 
 <br />
-TODO
+
+## **What is dependency-injection-ts?**
+dependency-injection-ts is a dependency injection tool for TypeScript.
+
+It provides:
+- Constructor parameters injection.
+- Class, value & token injection.
+- Singleton & transient injectable.
+- Decorators for injectable classes and parameter injections.
+
+It does not provide:
+- Child containers.
+
+[API Documentation](https://ahzhezhe.github.io/docs/dependency-injection-ts-v0/index.html)
+
+<br />
+
+## **Install via NPM**
+```
+npm install dependency-injection-ts
+```
+
+<br />
+
+# **tsconfig.json**
+Make sure that these 2 options are set to true
+```json
+{
+  "emitDecoratorMetadata": true,
+  "experimentalDecorators": true
+}
+```
+
+<br />
+
+# **Injectable**
+Injectable can be a class instance or any value.
+
+<br />
+
+# **Token**
+A token will be resolved to an injectable during injection.
+
+A token can be a class, a string or a symbol.
+
+<br />
+
+# **Register an injectable class**
+```typescript
+@Injectable()
+export class ClassA {
+}
+
+// or
+
+Container.register(ClassA);
+```
+
+## **Scope**
+```typescript
+@Injectable({ scope: Scope.TRANSIENT })
+export class ClassA {
+}
+
+// or
+
+Container.register(ClassA, { scope: Scope.TRANSIENT });
+```
+
+Available scopes:
+- `Singleton` - Class will only be instantiated once and resued throughout the container.
+- `Transient` - Class will be instantiated everytime it is retrieved/injected from container.
+
+Default scope is singleton.
+
+<br />
+
+# **Register an injectable value**
+```typescript
+Container.register('A', { value: 'hello world' });
+```
+Token `'A'` will be resolved to string value `'hello world'`.
+
+<br />
+
+# **Register an injectable token alias**
+```typescript
+Container.register('B', { token: 'A' });
+```
+Token `'B'` will be resolved to whatever token `'A'` is registered as.
+
+That makes token `'B'` an alias of token `'A'`.
+
+<br />
+
+# **Register an injectable class alias**
+```typescript
+export class ParentClass {
+}
+
+@Injectable({ token: ParentClass })
+export class ClassA extends ParentClass {
+}
+
+// or
+
+Container.register(ParentClass, { class: ClassA });
+```
+Token `ParentClass` will be resolved to an instance of `ClassA` instead of `ParentClass` itself.
+
+<br />
+
+# **Register using decorator**
+```typescript
+@Register([
+  ['A', { value: 'hello world' }]
+  ['B', { token: 'A' }]
+])
+@Injectable()
+export class ClassA {
+}
+```
+
+<br />
+
+# **Inject constructor parameters**
+## **Auto injection**
+```typescript
+@Injectable()
+export class ClassA {
+}
+
+@Injectable()
+export class ClassB {
+
+  constructor(
+    readonly a: ClassA // will be injected with an instance of ClassA
+  ) {}
+
+}
+```
+
+## **Explicit injection**
+```typescript
+export class ParentClass {
+}
+
+@Injectable()
+export class ClassA extends ParentClass {
+}
+
+@Injectable()
+export class ClassB {
+
+  constructor(
+    @Inject(ClassA) readonly a: ParentClass // will be injected with an instance of ClassA althought the parameter type is ParentClass
+  ) {}
+
+}
+```
+
+## **Token injection**
+```typescript
+Container.register('A', { value: 'hello world' });
+Container.register('B', { token: 'A' });
+
+@Injectable()
+export class ClassA {
+
+  constructor(
+    @Inject('A') readonly a: string, // will be injected with string value 'hello world'
+    @Inject('B') readonly b: string // will be injected with token 'A', which resolved as string value 'hello world'
+  ) {}
+
+}
+```
+
+## **Array injection**
+```typescript
+Container.register('A', { value: 'hello' });
+Container.register('A', { value: 'world' });
+
+export class ParentClass {
+}
+
+@Injectable({ token: ParentClass })
+export class ClassA extends ParentClass {
+}
+
+@Injectable({ token: ParentClass })
+export class ClassB extends ParentClass {
+}
+
+@Injectable()
+export class ClassC {
+
+  constructor(
+    @InjectAll('A') readonly a: string[], // will be injected with string array ['hello', 'world']
+    @InjectAll(ParentClass) readonly b: ParentClass[], // will be injected with an array that contains instances of ClassA and ClassB
+  ) {}
+
+}
+```
+
+## **All kind of injections**
+- `@Inject` or `@InjectOne` - inject exactly one injectable in the container, no injectable or more than one injectable will result in error.
+- `@InjectOneOrNone` - inject exactly one injectable in the container, no injectable will result in `undefined`, more than one injectable will result in error.
+- `@InjectAny` - inject the first registered injectable in the container, no injectable will result in error.
+- `@InjectAnyOrNone` - inject the first registered injectable in the container, no injectable will result in `undefined`.
+- `@InjectAll` - inject all and at least one injectable, no injectable will result in error.
+- `@InjectAllOrNone` - inject all injectables, no injectable will result in empty array.
+
+<br />
+
+## **Getting injectable from container**
+```typescript
+Container.register('A', { value: 'hello world' });
+
+@Injectable()
+export class ClassA {
+
+  private readonly val = Container.get<string>('A'); // returns string value 'hello world'
+
+}
+
+const a = Container.get(ClassA); // returns an instance of ClassA
+```
