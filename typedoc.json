@@ -1,6 +1,6 @@
 {
-  "name": "dependency-injection-ts - v0",
-  "out": "docs/dependency-injection-ts-v0",
+  "name": "tsinject - v0",
+  "out": "docs/tsinject-v0",
   "entryPoints": [
     "src/index.ts"
   ],

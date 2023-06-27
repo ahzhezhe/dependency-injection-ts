@@ -1,14 +1,14 @@
-# **dependency-injection-ts**
-[![npm package](https://img.shields.io/npm/v/dependency-injection-ts)](https://www.npmjs.com/package/dependency-injection-ts)
-[![npm downloads](https://img.shields.io/npm/dt/dependency-injection-ts)](https://www.npmjs.com/package/dependency-injection-ts)
-[![GitHub test](https://github.com/ahzhezhe/dependency-injection-ts/workflows/test/badge.svg?branch=master)](https://github.com/ahzhezhe/dependency-injection-ts)
-[![GitHub issues](https://img.shields.io/github/issues/ahzhezhe/dependency-injection-ts)](https://github.com/ahzhezhe/dependency-injection-ts/issues)
-[![GitHub license](https://img.shields.io/github/license/ahzhezhe/dependency-injection-ts)](https://github.com/ahzhezhe/dependency-injection-ts/blob/master/LICENSE)
+# **tsinject**
+[![npm package](https://img.shields.io/npm/v/tsinject)](https://www.npmjs.com/package/tsinject)
+[![npm downloads](https://img.shields.io/npm/dt/tsinject)](https://www.npmjs.com/package/tsinject)
+[![GitHub test](https://github.com/ahzhezhe/tsinject/workflows/test/badge.svg?branch=master)](https://github.com/ahzhezhe/tsinject)
+[![GitHub issues](https://img.shields.io/github/issues/ahzhezhe/tsinject)](https://github.com/ahzhezhe/tsinject/issues)
+[![GitHub license](https://img.shields.io/github/license/ahzhezhe/tsinject)](https://github.com/ahzhezhe/tsinject/blob/master/LICENSE)
 
 <br />
 
-## **What is dependency-injection-ts?**
-dependency-injection-ts is a dependency injection tool for TypeScript.
+## **What is tsinject?**
+tsinject is a dependency injection library for TypeScript.
 
 It provides:
 - Constructor parameters injection.
@@ -16,13 +16,13 @@ It provides:
 - Singleton & transient injectable.
 - Decorators for injectable classes and parameter injections.
 
-[API Documentation](https://ahzhezhe.github.io/docs/dependency-injection-ts-v0/index.html)
+[API Documentation](https://ahzhezhe.github.io/docs/tsinject-v0/index.html)
 
 <br />
 
 ## **Install via NPM**
 ```
-npm install dependency-injection-ts
+npm install tsinject
 ```
 
 <br />

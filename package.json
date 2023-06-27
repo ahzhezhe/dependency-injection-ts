@@ -1,16 +1,18 @@
 {
-  "name": "dependency-injection-ts",
+  "name": "tsinject",
   "version": "0.1.0",
   "author": "Chang Zhe Jiet",
-  "description": "A dependency injection tool for TypeScript.",
+  "description": "A dependency injection library for TypeScript.",
   "keywords": [
+    "di",
+    "ioc",
     "dependency injection",
     "inversion of control"
   ],
-  "homepage": "https://github.com/ahzhezhe/dependency-injection-ts#readme",
+  "homepage": "https://github.com/ahzhezhe/tsinject#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahzhezhe/dependency-injection-ts"
+    "url": "https://github.com/ahzhezhe/tsinject"
   },
   "funding": "https://www.paypal.me/ahzhezhe",
   "license": "ISC",
