@@ -232,8 +232,8 @@ export class Container {
     let instance = this.#singletons.get(cls);
     if (!instance) {
       instance = this.#createInstance(cls);
+      this.#singletons.set(cls, instance);
     }
-    this.#singletons.set(cls, instance);
     return instance;
   }
 
