@@ -28,7 +28,7 @@ export class Container {
    */
   static register<T, U = T>(token: Token, injectable: InjectableToken<T, U>): void;
   static register(token: Token, injectable?: Partial<InjectableClass<any, any> & InjectableValue<any, any> & InjectableToken<any, any>>) {
-    const tokens = this.#injectables.get(token) || [];
+    const tokens = this.#injectables.get(token) ?? [];
     tokens.push(this.#toInjectable(token, injectable));
     this.#injectables.set(token, tokens);
   }
@@ -185,8 +185,8 @@ export class Container {
       return {
         type: 'class',
         injectable: {
-          class: injectable.class || token,
-          scope: injectable.scope || Scope.SINGLETON,
+          class: injectable.class ?? token,
+          scope: injectable.scope ?? Scope.SINGLETON,
           transformer: injectable.transformer
         }
       };
@@ -238,8 +238,8 @@ export class Container {
   }
 
   static #createInstance<T extends Class>(cls: T): InstanceType<T> {
-    const paramTypes: any[] = Reflect.getOwnMetadata(MetadataKey.PARAM_TYPES, cls) || [];
-    const paramInjections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, cls) || new Map();
+    const paramTypes: any[] = Reflect.getOwnMetadata(MetadataKey.PARAM_TYPES, cls) ?? [];
+    const paramInjections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, cls) ?? new Map();
 
     const params = paramTypes.map((paramType, i) => {
       const injection = paramInjections.get(i);

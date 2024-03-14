@@ -15,7 +15,7 @@ export const Register = (tokens: [token: Token, injectable: InjectableValue<any,
  */
 export const Injectable = (options?: InjectableOptions): ClassDecorator => target => {
   const cls: Class = target as any;
-  const { scope = Scope.SINGLETON, token } = options || {};
+  const { scope = Scope.SINGLETON, token } = options ?? {};
 
   Container.register(cls, { class: cls, scope });
 
@@ -29,8 +29,8 @@ export const Injectable = (options?: InjectableOptions): ClassDecorator => targe
  * Default require exactly one injectable.
  */
 export const Inject = (token: Token, options?: InjectOptions): ParameterDecorator => (target, _, paramIndex) => {
-  const { require = Require.ONE, transformer } = options || {};
-  const injections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) || new Map();
+  const { require = Require.ONE, transformer } = options ?? {};
+  const injections: ParamInjections = Reflect.getOwnMetadata(MetadataKey.INJECT, target) ?? new Map();
   injections.set(paramIndex, { token, require, transformer });
   Reflect.defineMetadata(MetadataKey.INJECT, injections, target);
 };
