@@ -14,7 +14,7 @@
     "type": "git",
     "url": "https://github.com/ahzhezhe/dependency-injection-ts"
   },
-  "funding": "https://www.paypal.me/ahzhezhe",
+  "funding": "https://github.com/sponsors/ahzhezhe",
   "license": "ISC",
   "files": [
     ".github/FUNDING.yml",
@@ -29,11 +29,9 @@
     "build:watch": "tsc -w",
     "prepublishOnly": "npm run build",
     "postpublish": "rm -rf dist",
-    "postversion": "git push",
-    "postinstall": "github-sponsors"
+    "postversion": "git push"
   },
   "dependencies": {
-    "github-sponsors": "^1.0.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
