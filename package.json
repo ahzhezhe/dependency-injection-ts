@@ -27,9 +27,10 @@
     "test": "jest",
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc -w -p tsconfig.build.json",
+    "postversion": "git push",
     "prepublishOnly": "npm run build",
     "postpublish": "rm -rf dist",
-    "postversion": "git push"
+    "publish": "npm publish --auth-type=legacy"
   },
   "dependencies": {
     "reflect-metadata": "0.2.2"
